@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+/* ============ CSS VARIABLES ============ */
+:root {
+  --bg: #0f172a;
+  --bg2: #1e293b;
+  --bg3: #334155;
+  --card: #1e293b;
+  --border: #334155;
+  --text: #f1f5f9;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --red: #ef4444;
+  --red-d: #991b1b;
+  --red-bg: #7f1d1d;
+  --green: #22c55e;
+  --green-bg: #14532d;
+  --blue: #3b82f6;
+  --blue-bg: #1e3a5f;
+  --yellow: #f59e0b;
+  --yellow-bg: #78350f;
+  --orange: #f97316;
+  --purple: #a855f7;
+  --cyan: #06b6d4;
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(0,0,0,.4);
+}
+
+/* ============ RESET ============ */
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:var(--bg2); }
+::-webkit-scrollbar-thumb { background:var(--bg3); border-radius:3px; }
+
+/* ============ LOADING ============ */
+#loading-screen {
+  position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; z-index:9999;
+}
+#loading-screen .spinner {
+  width:50px; height:50px; border:4px solid var(--bg3);
+  border-top-color:var(--red); border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+#loading-screen p { margin-top:16px; color:var(--text2); font-size:14px; }
+
+/* ============ HEADER ============ */
+.header {
+  background:linear-gradient(135deg,#7f1d1d,#991b1b,#450a0a);
+  padding:16px 24px; display:flex; align-items:center; justify-content:space-between;
+  border-bottom:2px solid var(--red);
+}
+.header h1 { font-size:20px; font-weight:800; color:#fff; }
+.header h1 i { margin-right:8px; }
+.header-actions { display:flex; gap:8px; }
+
+/* ============ NAV TABS ============ */
+.nav-bar {
+  background:var(--bg2); border-bottom:1px solid var(--border);
+  display:flex; gap:2px; padding:0 16px; overflow-x:auto;
+}
+.nav-tab {
+  padding:12px 18px; background:none; border:none; color:var(--text2);
+  font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap;
+  border-bottom:3px solid transparent; transition:.2s;
+  font-family:inherit; display:flex; align-items:center; gap:6px;
+}
+.nav-tab:hover { color:var(--text); background:rgba(255,255,255,.04); }
+.nav-tab.active { color:var(--red); border-bottom-color:var(--red); }
+.nav-tab.issue-tab {
+  color:#22c55e; font-weight:700;
+}
+.nav-tab.issue-tab.active { color:#22c55e; border-bottom-color:#22c55e; }
+.nav-tab .badge {
+  background:var(--red); color:#fff; font-size:10px; padding:2px 7px;
+  border-radius:99px; font-weight:700;
+}
+
+/* ============ MAIN CONTENT ============ */
+.main { padding:20px; max-width:1400px; margin:0 auto; }
+.view { display:none; }
+.view.active { display:block; animation:fadeIn .3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+/* ============ CARDS ============ */
+.card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:24px; }
+.stat-card {
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  padding:20px; position:relative; overflow:hidden;
+}
+.stat-card .icon {
+  width:44px; height:44px; border-radius:10px; display:flex; align-items:center;
+  justify-content:center; font-size:20px; margin-bottom:12px;
+}
+.stat-card .value { font-size:28px; font-weight:800; }
+.stat-card .label { font-size:12px; color:var(--text2); margin-top:2px; font-weight:500; }
+.stat-card.red .icon { background:rgba(239,68,68,.15); color:var(--red); }
+.stat-card.blue .icon { background:rgba(59,130,246,.15); color:var(--blue); }
+.stat-card.green .icon { background:rgba(34,197,94,.15); color:var(--green); }
+.stat-card.yellow .icon { background:rgba(245,158,11,.15); color:var(--yellow); }
+.stat-card.purple .icon { background:rgba(168,85,247,.15); color:var(--purple); }
+.stat-card.cyan .icon { background:rgba(6,182,212,.15); color:var(--cyan); }
+
+/* ============ SECTION ============ */
+.section {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--radius); overflow:hidden; margin-bottom:20px;
+}
+.section-header {
+  padding:16px 20px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+}
+.section-header h2 { font-size:16px; font-weight:700; display:flex; align-items:center; gap:8px; }
+.section-body { padding:16px 20px; }
+
+/* ============ TOOLBAR ============ */
+.toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:16px; }
+.search-box {
+  flex:1; min-width:200px; position:relative;
+}
+.search-box i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text3); }
+.search-box input {
+  width:100%; padding:10px 12px 10px 36px; background:var(--bg); border:1px solid var(--border);
+  border-radius:8px; color:var(--text); font-size:13px; font-family:inherit;
+}
+.search-box input:focus { outline:none; border-color:var(--blue); }
+
+.filter-select {
+  padding:10px 12px; background:var(--bg); border:1px solid var(--border);
+  border-radius:8px; color:var(--text); font-size:13px; font-family:inherit; cursor:pointer;
+}
+.filter-select:focus { outline:none; border-color:var(--blue); }
+
+/* ============ BUTTONS ============ */
+.btn {
+  padding:10px 18px; border:none; border-radius:8px; font-size:13px;
+  font-weight:600; cursor:pointer; font-family:inherit;
+  display:inline-flex; align-items:center; gap:6px; transition:.2s;
+}
+.btn:hover { transform:translateY(-1px); filter:brightness(1.1); }
+.btn:active { transform:translateY(0); }
+.btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+.btn-red { background:var(--red); color:#fff; }
+.btn-green { background:var(--green); color:#000; }
+.btn-blue { background:var(--blue); color:#fff; }
+.btn-yellow { background:var(--yellow); color:#000; }
+.btn-ghost { background:transparent; color:var(--text2); border:1px solid var(--border); }
+.btn-ghost:hover { background:var(--bg3); color:var(--text); }
+.btn-sm { padding:6px 12px; font-size:12px; }
+.btn-lg { padding:14px 28px; font-size:15px; }
+.btn-issue {
+  background:linear-gradient(135deg,#059669,#10b981); color:#fff;
+  font-weight:700; font-size:14px; padding:12px 24px;
+  box-shadow:0 4px 15px rgba(16,185,129,.3);
+}
+.btn-issue:hover { box-shadow:0 6px 20px rgba(16,185,129,.4); }
+
+/* ============ TABLE ============ */
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+thead th {
+  background:var(--bg); padding:10px 12px; text-align:left;
+  font-weight:600; color:var(--text2); font-size:11px; text-transform:uppercase;
+  letter-spacing:.5px; white-space:nowrap; border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:1;
+}
+tbody td {
+  padding:10px 12px; border-bottom:1px solid rgba(51,65,85,.5);
+  vertical-align:middle;
+}
+tbody tr:hover { background:rgba(255,255,255,.03); }
+.item-name { font-weight:600; color:var(--text); }
+.item-cat { color:var(--text2); font-size:12px; }
+.qty-cell { font-weight:700; font-size:15px; text-align:center; }
+.qty-ok { color:var(--green); }
+.qty-low { color:var(--yellow); }
+.qty-out { color:var(--red); }
+
+/* ============ STATUS BADGE ============ */
+.badge-status {
+  padding:3px 10px; border-radius:99px; font-size:11px; font-weight:700;
+  display:inline-block; text-align:center;
+}
+.badge-ok { background:rgba(34,197,94,.15); color:var(--green); }
+.badge-low { background:rgba(245,158,11,.15); color:var(--yellow); }
+.badge-out { background:rgba(239,68,68,.15); color:var(--red); }
+
+/* ============ ACTION BUTTONS ============ */
+.action-btns { display:flex; gap:4px; }
+.act-btn {
+  width:30px; height:30px; border:none; border-radius:6px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:13px;
+  transition:.2s;
+}
+.act-btn:hover { transform:scale(1.1); }
+.act-edit { background:rgba(59,130,246,.15); color:var(--blue); }
+.act-issue { background:rgba(34,197,94,.15); color:var(--green); }
+.act-del { background:rgba(239,68,68,.15); color:var(--red); }
+.act-plus { background:rgba(34,197,94,.15); color:var(--green); }
+.act-minus { background:rgba(245,158,11,.15); color:var(--yellow); }
+
+/* ============ MODAL ============ */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,.7); display:none;
+  align-items:center; justify-content:center; z-index:1000; padding:20px;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.open { display:flex; }
+.modal {
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  width:100%; max-width:640px; max-height:90vh; overflow-y:auto;
+  box-shadow:var(--shadow); animation:modalIn .3s ease;
+}
+@keyframes modalIn { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:none} }
+.modal-header {
+  padding:16px 20px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.modal-header h2 { font-size:16px; font-weight:700; display:flex; align-items:center; gap:8px; }
+.modal-close {
+  width:32px; height:32px; border:none; background:var(--bg3); color:var(--text2);
+  border-radius:8px; cursor:pointer; font-size:16px; display:flex; align-items:center;
+  justify-content:center; transition:.2s;
+}
+.modal-close:hover { background:var(--red); color:#fff; }
+.modal-body { padding:20px; }
+.modal-footer {
+  padding:16px 20px; border-top:1px solid var(--border);
+  display:flex; justify-content:flex-end; gap:10px;
+}
+
+/* ============ FORMS ============ */
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.form-group { display:flex; flex-direction:column; gap:4px; }
+.form-group.full { grid-column:1/-1; }
+.form-group label { font-size:12px; font-weight:600; color:var(--text2); }
+.form-group label .req { color:var(--red); }
+.form-control {
+  padding:10px 12px; background:var(--bg); border:1px solid var(--border);
+  border-radius:8px; color:var(--text); font-size:13px; font-family:inherit;
+}
+.form-control:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(59,130,246,.15); }
+select.form-control { cursor:pointer; }
+textarea.form-control { resize:vertical; min-height:60px; }
+
+/* ============ ISSUE FORM ============ */
+.issue-form-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--radius); overflow:hidden;
+}
+.issue-form-header {
+  background:linear-gradient(135deg,#059669,#047857);
+  padding:20px 24px; color:#fff;
+}
+.issue-form-header h2 { font-size:20px; font-weight:800; margin-bottom:4px; }
+.issue-form-header p { font-size:13px; opacity:.8; }
+.issue-form-body { padding:24px; }
+.item-preview {
+  background:var(--bg); border:1px solid var(--border); border-radius:10px;
+  padding:16px; margin-bottom:20px; display:none;
+}
+.item-preview.show { display:block; }
+.item-preview h4 { color:var(--text); font-size:15px; margin-bottom:8px; }
+.item-preview .detail { display:flex; flex-wrap:wrap; gap:12px; }
+.item-preview .detail span { font-size:12px; color:var(--text2); }
+.item-preview .detail span b { color:var(--text); }
+.item-preview .stock-info {
+  margin-top:10px; padding:8px 14px; border-radius:8px; font-weight:700; font-size:14px;
+  display:inline-block;
+}
+.stock-ok { background:rgba(34,197,94,.1); color:var(--green); }
+.stock-low { background:rgba(245,158,11,.1); color:var(--yellow); }
+.stock-out { background:rgba(239,68,68,.1); color:var(--red); }
+
+/* ============ LOW STOCK LIST ============ */
+.low-stock-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 0; border-bottom:1px solid rgba(51,65,85,.4);
+}
+.low-stock-item:last-child { border:none; }
+.low-stock-info { flex:1; }
+.low-stock-info .name { font-weight:600; font-size:13px; }
+.low-stock-info .cat { font-size:11px; color:var(--text3); }
+.low-stock-qty { font-weight:800; font-size:16px; }
+
+/* ============ TOAST ============ */
+#toast-container {
+  position:fixed; top:80px; right:20px; z-index:2000;
+  display:flex; flex-direction:column; gap:8px;
+}
+.toast {
+  padding:14px 20px; border-radius:10px; font-size:13px; font-weight:600;
+  color:#fff; min-width:280px; max-width:420px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4); animation:toastIn .3s ease;
+  display:flex; align-items:center; gap:10px;
+}
+.toast i { font-size:16px; }
+.toast-success { background:linear-gradient(135deg,#059669,#047857); }
+.toast-error { background:linear-gradient(135deg,#dc2626,#991b1b); }
+.toast-warning { background:linear-gradient(135deg,#d97706,#92400e); }
+.toast-info { background:linear-gradient(135deg,#2563eb,#1e40af); }
+@keyframes toastIn { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:none} }
+
+/* ============ EMPTY STATE ============ */
+.empty-state {
+  text-align:center; padding:40px 20px; color:var(--text3);
+}
+.empty-state i { font-size:48px; margin-bottom:12px; display:block; }
+.empty-state p { font-size:14px; }
+
+/* ============ EMAIL SECTION ============ */
+.email-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--radius); padding:24px; margin-bottom:16px;
+}
+.email-card h3 { font-size:15px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.toggle-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 0;
+}
+.toggle-switch {
+  width:44px; height:24px; background:var(--bg3); border-radius:12px;
+  position:relative; cursor:pointer; transition:.3s;
+}
+.toggle-switch.on { background:var(--green); }
+.toggle-switch::after {
+  content:''; position:absolute; top:3px; left:3px;
+  width:18px; height:18px; background:#fff; border-radius:50%; transition:.3s;
+}
+.toggle-switch.on::after { left:23px; }
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:768px) {
+  .header { padding:12px 16px; }
+  .header h1 { font-size:15px; }
+  .nav-bar { padding:0 8px; }
+  .nav-tab { padding:10px 12px; font-size:12px; }
+  .main { padding:12px; }
+  .card-grid { grid-template-columns:repeat(2,1fr); gap:10px; }
+  .stat-card .value { font-size:22px; }
+  .form-grid { grid-template-columns:1fr; }
+  .toolbar { flex-direction:column; }
+  .action-btns { flex-wrap:wrap; }
+  .modal { max-width:100%; margin:10px; }
+}
+@media(max-width:480px) {
+  .card-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ LOADING SCREEN ============ -->
+<div id="loading-screen">
+  <div class="spinner"></div>
+  <p>Loading Fire IMS...</p>
+</div>
+
+<!-- ============ HEADER ============ -->
+<div class="header">
+  <h1><i class="fas fa-fire"></i> Fire Protection & Detection — IMS</h1>
+  <div class="header-actions">
+    <button class="btn btn-ghost btn-sm" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+  </div>
+</div>
+
+<!-- ============ NAVIGATION ============ -->
+<div class="nav-bar">
+  <button class="nav-tab active" data-view="dashboard" onclick="showView('dashboard',this)">
+    <i class="fas fa-chart-line"></i> Dashboard
+  </button>
+  <button class="nav-tab" data-view="inventory" onclick="showView('inventory',this)">
+    <i class="fas fa-boxes-stacked"></i> Inventory
+  </button>
+  <button class="nav-tab issue-tab" data-view="issue" onclick="showView('issue',this)">
+    <i class="fas fa-hand-holding-hand"></i> Issue Item
+  </button>
+  <button class="nav-tab" data-view="history" onclick="showView('history',this)">
+    <i class="fas fa-clock-rotate-left"></i> Issue History
+    <span class="badge" id="issue-count-badge" style="display:none">0</span>
+  </button>
+  <button class="nav-tab" data-view="email" onclick="showView('email',this)">
+    <i class="fas fa-envelope"></i> Email
+  </button>
+</div>
+
+<!-- ============ MAIN CONTENT ============ -->
+<div class="main">
+
+  <!-- ===== DASHBOARD VIEW ===== -->
+  <div id="view-dashboard" class="view active">
+    <div class="card-grid" id="stats-cards"></div>
+    <div class="section">
+      <div class="section-header">
+        <h2><i class="fas fa-triangle-exclamation" style="color:var(--yellow)"></i> Low Stock Alerts</h2>
+      </div>
+      <div class="section-body" id="low-stock-list"></div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <h2><i class="fas fa-layer-group" style="color:var(--blue)"></i> Category Breakdown</h2>
+      </div>
+      <div class="section-body" id="category-breakdown"></div>
+    </div>
+  </div>
+
+  <!-- ===== INVENTORY VIEW ===== -->
+  <div id="view-inventory" class="view">
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="search-input" placeholder="Search items..." oninput="filterInventory()">
+      </div>
+      <select class="filter-select" id="filter-category" onchange="filterInventory()">
+        <option value="">All Categories</option>
+      </select>
+      <select class="filter-select" id="filter-status" onchange="filterInventory()">
+        <option value="">All Status</option>
+        <option value="OK">✅ OK</option>
+        <option value="LOW">⚠️ Low Stock</option>
+        <option value="OUT">🔴 Out of Stock</option>
+      </select>
+      <button class="btn btn-red" onclick="openAddModal()"><i class="fas fa-plus"></i> Add Item</button>
+      <button class="btn btn-issue" onclick="showView('issue',document.querySelector('[data-view=issue]'))">
+        <i class="fas fa-hand-holding-hand"></i> Issue Item
+      </button>
+    </div>
+    <div class="section">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Item Name</th>
+              <th>Category</th>
+              <th>Sub Category</th>
+              <th>Size</th>
+              <th>Qty</th>
+              <th>Min</th>
+              <th>Unit</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="inventory-table"></tbody>
+        </table>
+      </div>
+      <div id="inventory-empty" class="empty-state" style="display:none">
+        <i class="fas fa-box-open"></i>
+        <p>No items found. Add your first item!</p>
+        <button class="btn btn-red" style="margin-top:12px" onclick="openAddModal()"><i class="fas fa-plus"></i> Add Item</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ISSUE ITEM VIEW ===== -->
+  <div id="view-issue" class="view">
+    <div class="issue-form-card">
+      <div class="issue-form-header">
+        <h2><i class="fas fa-hand-holding-hand"></i> Issue Item</h2>
+        <p>Issue inventory items to personnel or projects</p>
+      </div>
+      <div class="issue-form-body">
+        <!-- Item Selection -->
+        <div class="form-group full" style="margin-bottom:16px">
+          <label><i class="fas fa-box"></i> Select Item <span class="req">*</span></label>
+          <select class="form-control" id="issue-item-select" onchange="onIssueItemSelect()">
+            <option value="">— Select an item —</option>
+          </select>
+        </div>
+
+        <!-- Item Preview -->
+        <div class="item-preview" id="issue-item-preview">
+          <h4 id="preview-name"></h4>
+          <div class="detail">
+            <span>Category: <b id="preview-cat"></b></span>
+            <span>Sub: <b id="preview-sub"></b></span>
+            <span>Size: <b id="preview-size"></b></span>
+            <span>Unit: <b id="preview-unit"></b></span>
+            <span>Location: <b id="preview-loc"></b></span>
+          </div>
+          <div class="stock-info" id="preview-stock"></div>
+        </div>
+
+        <!-- Issue Form -->
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Quantity to Issue <span class="req">*</span></label>
+            <input type="number" class="form-control" id="issue-qty" min="1" placeholder="Enter qty">
+          </div>
+          <div class="form-group">
+            <label>Issued To (Person) <span class="req">*</span></label>
+            <input type="text" class="form-control" id="issue-to" placeholder="Receiver name">
+          </div>
+          <div class="form-group">
+            <label>Issue Date <span class="req">*</span></label>
+            <input type="date" class="form-control" id="issue-date">
+          </div>
+          <div class="form-group">
+            <label>Issue Time</label>
+            <input type="time" class="form-control" id="issue-time">
+          </div>
+          <div class="form-group">
+            <label>Issue Location</label>
+            <input type="text" class="form-control" id="issue-location" placeholder="Where issued">
+          </div>
+          <div class="form-group">
+            <label>Project Name</label>
+            <input type="text" class="form-control" id="issue-project" placeholder="Project / Site">
+          </div>
+          <div class="form-group">
+            <label>Issued By</label>
+            <input type="text" class="form-control" id="issue-by" placeholder="Your name">
+          </div>
+          <div class="form-group full">
+            <label>Description / Remarks</label>
+            <textarea class="form-control" id="issue-desc" placeholder="Additional notes..."></textarea>
+          </div>
+        </div>
+
+        <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end">
+          <button class="btn btn-ghost" onclick="clearIssueForm()"><i class="fas fa-eraser"></i> Clear</button>
+          <button class="btn btn-issue btn-lg" id="issue-submit-btn" onclick="submitIssue()">
+            <i class="fas fa-paper-plane"></i> Submit Issue
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ISSUE HISTORY VIEW ===== -->
+  <div id="view-history" class="view">
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="history-search" placeholder="Search issues..." oninput="filterHistory()">
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+    </div>
+    <div class="section">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Issue ID</th>
+              <th>Item</th>
+              <th>Category</th>
+              <th>Qty</th>
+              <th>Issued To</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Location</th>
+              <th>Project</th>
+              <th>By</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="history-table"></tbody>
+        </table>
+      </div>
+      <div id="history-empty" class="empty-state" style="display:none">
+        <i class="fas fa-clock-rotate-left"></i>
+        <p>No issue records yet.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== EMAIL VIEW ===== -->
+  <div id="view-email" class="view">
+    <div class="email-card">
+      <h3><i class="fas fa-cog" style="color:var(--blue)"></i> Email Configuration</h3>
+      <div class="form-group" style="margin-bottom:14px">
+        <label>Recipient Emails (comma-separated)</label>
+        <input type="text" class="form-control" id="email-recipients" placeholder="email1@example.com, email2@example.com">
+      </div>
+      <div class="toggle-row">
+        <span style="font-size:13px;font-weight:600">Auto Daily Low Stock Alert</span>
+        <div class="toggle-switch" id="email-auto-toggle" onclick="toggleAutoEmail()"></div>
+      </div>
+      <div class="form-group" style="margin-top:10px;margin-bottom:14px">
+        <label>Alert Time</label>
+        <input type="time" class="form-control" id="email-alert-time" value="08:00" style="max-width:200px">
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+        <button class="btn btn-blue" onclick="saveEmail()"><i class="fas fa-save"></i> Save Settings</button>
+        <button class="btn btn-yellow" onclick="sendAlert()"><i class="fas fa-bell"></i> Send Low Stock Alert</button>
+        <button class="btn btn-ghost" onclick="sendReport()"><i class="fas fa-file-export"></i> Send Full Report</button>
+        <button class="btn btn-ghost" onclick="testEmail()"><i class="fas fa-vial"></i> Send Test</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- ============ ADD / EDIT ITEM MODAL ============ -->
+<div class="modal-overlay" id="item-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title"><i class="fas fa-plus-circle"></i> Add New Item</h2>
+      <button class="modal-close" onclick="closeModal('item-modal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="item-id">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Item Name <span class="req">*</span></label>
+          <input type="text" class="form-control" id="item-name" placeholder="Enter item name">
+        </div>
+        <div class="form-group">
+          <label>Category <span class="req">*</span></label>
+          <select class="form-control" id="item-category" onchange="onCategoryChange()">
+            <option value="">Select Category</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Sub Category</label>
+          <select class="form-control" id="item-subcategory">
+            <option value="">Select Sub Category</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Size</label>
+          <select class="form-control" id="item-size">
+            <option value="">Select Size</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Unit</label>
+          <select class="form-control" id="item-unit">
+            <option value="Nos">Nos</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Quantity <span class="req">*</span></label>
+          <input type="number" class="form-control" id="item-qty" min="0" value="0">
+        </div>
+        <div class="form-group">
+          <label>Min Threshold</label>
+          <input type="number" class="form-control" id="item-threshold" min="0" value="0">
+        </div>
+        <div class="form-group">
+          <label>Location</label>
+          <input type="text" class="form-control" id="item-location" placeholder="Storage location">
+        </div>
+        <div class="form-group">
+          <label>Technical Specs</label>
+          <input type="text" class="form-control" id="item-specs" placeholder="Specifications">
+        </div>
+        <div class="form-group full">
+          <label>Notes</label>
+          <textarea class="form-control" id="item-notes" placeholder="Additional notes..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('item-modal')">Cancel</button>
+      <button class="btn btn-red" id="modal-save-btn" onclick="saveItem()"><i class="fas fa-save"></i> Save Item</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div id="toast-container"></div>
+
+<!-- ============ JAVASCRIPT ============ -->
+<script>
+/* ================================================================
+   STATE
+   ================================================================ */
+var APP = {
+  config: null,
+  items: [],
+  issues: [],
+  stats: null,
+  emailConfig: null,
+  editingId: null,
+  filteredItems: [],
+  filteredIssues: []
+};
+
+/* ================================================================
+   INIT
+   ================================================================ */
+function init() {
+  google.script.run
+    .withSuccessHandler(function(data) {
+      APP.config = data.config;
+      APP.items = data.items || [];
+      APP.stats = data.stats;
+      APP.emailConfig = data.emailConfig;
+      APP.issues = data.issues || [];
+      APP.filteredItems = APP.items.slice();
+      APP.filteredIssues = APP.issues.slice();
+
+      populateDropdowns();
+      renderDashboard();
+      renderInventory();
+      renderIssueItemDropdown();
+      renderHistory();
+      loadEmailConfig();
+      updateIssueBadge();
+
+      document.getElementById('loading-screen').style.display = 'none';
+    })
+    .withFailureHandler(function(err) {
+      document.getElementById('loading-screen').innerHTML =
+        '<div style="text-align:center;color:#ef4444;"><i class="fas fa-exclamation-triangle" style="font-size:40px;margin-bottom:12px;display:block;"></i><p>Error: ' + err.message + '</p><button class="btn btn-red" style="margin-top:16px" onclick="location.reload()">Retry</button></div>';
+    })
+    .getInitialData();
+
+  // Set default date/time for issue form
+  var now = new Date();
+  var dd = now.toISOString().split('T')[0];
+  var tt = now.toTimeString().slice(0,5);
+  document.getElementById('issue-date').value = dd;
+  document.getElementById('issue-time').value = tt;
+}
+
+window.addEventListener('DOMContentLoaded', init);
+
+/* ================================================================
+   NAVIGATION
+   ================================================================ */
+function showView(viewName, tabEl) {
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
+  var el = document.getElementById('view-' + viewName);
+  if (el) el.classList.add('active');
+  if (tabEl) tabEl.classList.add('active');
+  else {
+    var t = document.querySelector('[data-view="'+viewName+'"]');
+    if(t) t.classList.add('active');
+  }
+}
+
+/* ================================================================
+   POPULATE DROPDOWNS
+   ================================================================ */
+function populateDropdowns() {
+  if (!APP.config) return;
+  var catSel = document.getElementById('item-category');
+  var filterCat = document.getElementById('filter-category');
+  var sizeSel = document.getElementById('item-size');
+  var unitSel = document.getElementById('item-unit');
+
+  // Categories
+  Object.keys(APP.config.CATEGORIES).forEach(function(c) {
+    catSel.innerHTML += '<option value="'+c+'">'+c+'</option>';
+    filterCat.innerHTML += '<option value="'+c+'">'+c+'</option>';
+  });
+
+  // Sizes
+  APP.config.SIZES.forEach(function(s) {
+    sizeSel.innerHTML += '<option value="'+s+'">'+s+'</option>';
+  });
+
+  // Units
+  unitSel.innerHTML = '';
+  APP.config.UNITS.forEach(function(u) {
+    unitSel.innerHTML += '<option value="'+u+'">'+u+'</option>';
+  });
+}
+
+function onCategoryChange() {
+  var cat = document.getElementById('item-category').value;
+  var subSel = document.getElementById('item-subcategory');
+  subSel.innerHTML = '<option value="">Select Sub Category</option>';
+  if (cat && APP.config.CATEGORIES[cat]) {
+    APP.config.CATEGORIES[cat].forEach(function(s) {
+      subSel.innerHTML += '<option value="'+s+'">'+s+'</option>';
+    });
+  }
+}
+
+/* ================================================================
+   DASHBOARD
+   ================================================================ */
+function renderDashboard() {
+  var s = APP.stats;
+  if (!s) return;
+
+  document.getElementById('stats-cards').innerHTML =
+    statCard('red','fa-boxes-stacked', s.totalItems, 'Total Items') +
+    statCard('blue','fa-cubes', s.totalQuantity, 'Total Quantity') +
+    statCard('yellow','fa-triangle-exclamation', s.lowStockCount, 'Low Stock') +
+    statCard('red','fa-circle-xmark', s.outOfStockCount, 'Out of Stock') +
+    statCard('green','fa-hand-holding-hand', APP.issues.length, 'Total Issues');
+
+  // Low stock list
+  var lsEl = document.getElementById('low-stock-list');
+  if (s.lowStockItems && s.lowStockItems.length > 0) {
+    var html = '';
+    s.lowStockItems.forEach(function(item) {
+      var cls = item.Quantity <= 0 ? 'qty-out' : 'qty-low';
+      html += '<div class="low-stock-item">' +
+        '<div class="low-stock-info"><div class="name">' + esc(item.ItemName) + '</div>' +
+        '<div class="cat">' + esc(item.Category) + ' / ' + esc(item.SubCategory) + '</div></div>' +
+        '<div class="low-stock-qty ' + cls + '">' + item.Quantity + ' / ' + item.MinThreshold + '</div></div>';
+    });
+    lsEl.innerHTML = html;
+  } else {
+    lsEl.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--green)"></i><p>All stock levels OK!</p></div>';
+  }
+
+  // Category breakdown
+  var cbEl = document.getElementById('category-breakdown');
+  if (s.breakdown) {
+    var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;">';
+    Object.keys(s.breakdown).forEach(function(c) {
+      var b = s.breakdown[c];
+      html += '<div style="background:var(--bg);padding:12px;border-radius:8px;border:1px solid var(--border);">' +
+        '<div style="font-weight:700;font-size:13px;margin-bottom:6px;">' + esc(c) + '</div>' +
+        '<div style="display:flex;gap:12px;font-size:12px;color:var(--text2);">' +
+        '<span>Items: <b style="color:var(--text)">' + b.count + '</b></span>' +
+        '<span>Qty: <b style="color:var(--text)">' + b.totalQty + '</b></span>' +
+        (b.lowStock > 0 ? '<span style="color:var(--yellow)">⚠️ ' + b.lowStock + '</span>' : '') +
+        '</div></div>';
+    });
+    html += '</div>';
+    cbEl.innerHTML = html;
+  }
+}
+
+function statCard(color, icon, value, label) {
+  return '<div class="stat-card ' + color + '">' +
+    '<div class="icon"><i class="fas ' + icon + '"></i></div>' +
+    '<div class="value">' + value + '</div>' +
+    '<div class="label">' + label + '</div></div>';
+}
+
+/* ================================================================
+   INVENTORY
+   ================================================================ */
+function renderInventory() {
+  var tbody = document.getElementById('inventory-table');
+  var empty = document.getElementById('inventory-empty');
+  var items = APP.filteredItems;
+
+  if (items.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  var html = '';
+  items.forEach(function(item) {
+    var stCls = item.Status === 'OUT' ? 'badge-out' : item.Status === 'LOW' ? 'badge-low' : 'badge-ok';
+    var qtyCls = item.Quantity <= 0 && item.MinThreshold > 0 ? 'qty-out' : item.isLowStock ? 'qty-low' : 'qty-ok';
+
+    html += '<tr>' +
+      '<td class="item-name">' + esc(item.ItemName) + '</td>' +
+      '<td class="item-cat">' + esc(item.Category) + '</td>' +
+      '<td class="item-cat">' + esc(item.SubCategory) + '</td>' +
+      '<td>' + esc(item.Size) + '</td>' +
+      '<td class="qty-cell ' + qtyCls + '">' + item.Quantity + '</td>' +
+      '<td style="text-align:center;color:var(--text3)">' + item.MinThreshold + '</td>' +
+      '<td>' + esc(item.Unit) + '</td>' +
+      '<td class="item-cat">' + esc(item.Location) + '</td>' +
+      '<td><span class="badge-status ' + stCls + '">' + item.Status + '</span></td>' +
+      '<td><div class="action-btns">' +
+        '<button class="act-btn act-plus" title="+1" onclick="adjustQty(\'' + item.ID + '\',1)"><i class="fas fa-plus"></i></button>' +
+        '<button class="act-btn act-minus" title="-1" onclick="adjustQty(\'' + item.ID + '\',-1)"><i class="fas fa-minus"></i></button>' +
+        '<button class="act-btn act-issue" title="Issue" onclick="openIssueFromTable(\'' + item.ID + '\')"><i class="fas fa-share"></i></button>' +
+        '<button class="act-btn act-edit" title="Edit" onclick="openEditModal(\'' + item.ID + '\')"><i class="fas fa-pen"></i></button>' +
+        '<button class="act-btn act-del" title="Delete" onclick="delItem(\'' + item.ID + '\')"><i class="fas fa-trash"></i></button>' +
+      '</div></td></tr>';
+  });
+  tbody.innerHTML = html;
+}
+
+function filterInventory() {
+  var q = document.getElementById('search-input').value.toLowerCase();
+  var cat = document.getElementById('filter-category').value;
+  var st = document.getElementById('filter-status').value;
+
+  APP.filteredItems = APP.items.filter(function(item) {
+    var matchQ = !q || item.ItemName.toLowerCase().indexOf(q) >= 0 ||
+      item.Category.toLowerCase().indexOf(q) >= 0 ||
+      item.SubCategory.toLowerCase().indexOf(q) >= 0 ||
+      item.Location.toLowerCase().indexOf(q) >= 0 ||
+      item.ID.toLowerCase().indexOf(q) >= 0;
+    var matchCat = !cat || item.Category === cat;
+    var matchSt = !st || item.Status === st;
+    return matchQ && matchCat && matchSt;
+  });
+  renderInventory();
+}
+
+/* ================================================================
+   ADD / EDIT ITEM
+   ================================================================ */
+function openAddModal() {
+  APP.editingId = null;
+  document.getElementById('modal-title').innerHTML = '<i class="fas fa-plus-circle"></i> Add New Item';
+  document.getElementById('modal-save-btn').innerHTML = '<i class="fas fa-save"></i> Add Item';
+  clearItemForm();
+  openModal('item-modal');
+}
+
+function openEditModal(id) {
+  var item = APP.items.find(function(i){ return i.ID === id; });
+  if (!item) return toast('Item not found','error');
+  APP.editingId = id;
+  document.getElementById('modal-title').innerHTML = '<i class="fas fa-pen-to-square"></i> Edit Item';
+  document.getElementById('modal-save-btn').innerHTML = '<i class="fas fa-save"></i> Update Item';
+
+  document.getElementById('item-id').value = item.ID;
+  document.getElementById('item-name').value = item.ItemName;
+  document.getElementById('item-category').value = item.Category;
+  onCategoryChange();
+  setTimeout(function(){
+    document.getElementById('item-subcategory').value = item.SubCategory || '';
+  }, 50);
+  document.getElementById('item-size').value = item.Size || '';
+  document.getElementById('item-unit').value = item.Unit || 'Nos';
+  document.getElementById('item-qty').value = item.Quantity;
+  document.getElementById('item-threshold').value = item.MinThreshold;
+  document.getElementById('item-location').value = item.Location || '';
+  document.getElementById('item-specs').value = item.TechnicalSpecs || '';
+  document.getElementById('item-notes').value = item.Notes || '';
+
+  openModal('item-modal');
+}
+
+function clearItemForm() {
+  ['item-id','item-name','item-location','item-specs','item-notes'].forEach(function(id){
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('item-qty').value = 0;
+  document.getElementById('item-threshold').value = 0;
+  document.getElementById('item-category').value = '';
+  document.getElementById('item-subcategory').innerHTML = '<option value="">Select Sub Category</option>';
+  document.getElementById('item-size').value = '';
+  document.getElementById('item-unit').value = 'Nos';
+}
+
+function saveItem() {
+  var data = {
+    ItemName: document.getElementById('item-name').value,
+    Category: document.getElementById('item-category').value,
+    SubCategory: document.getElementById('item-subcategory').value,
+    Size: document.getElementById('item-size').value,
+    Unit: document.getElementById('item-unit').value,
+    Quantity: document.getElementById('item-qty').value,
+    MinThreshold: document.getElementById('item-threshold').value,
+    Location: document.getElementById('item-location').value,
+    TechnicalSpecs: document.getElementById('item-specs').value,
+    Notes: document.getElementById('item-notes').value
+  };
+
+  if (!data.ItemName || data.ItemName.trim().length < 2) return toast('Item name required','error');
+  if (!data.Category) return toast('Category required','error');
+
+  var btn = document.getElementById('modal-save-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+  if (APP.editingId) {
+    data.ID = APP.editingId;
+    google.script.run.withSuccessHandler(onItemSaved).withFailureHandler(onItemError).updateItem(data);
+  } else {
+    google.script.run.withSuccessHandler(onItemSaved).withFailureHandler(onItemError).addItem(data);
+  }
+}
+
+function onItemSaved(result) {
+  var btn = document.getElementById('modal-save-btn');
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-save"></i> Save Item';
+
+  if (result.success) {
+    toast(result.message, 'success');
+    closeModal('item-modal');
+    refreshData();
+  } else {
+    toast(result.message, 'error');
+  }
+}
+
+function onItemError(err) {
+  var btn = document.getElementById('modal-save-btn');
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-save"></i> Save Item';
+  toast('Error: ' + err.message, 'error');
+}
+
+/* ================================================================
+   DELETE / ADJUST QTY
+   ================================================================ */
+function delItem(id) {
+  if (!confirm('Are you sure you want to delete this item?')) return;
+  google.script.run.withSuccessHandler(function(r) {
+    if (r.success) { toast('Deleted!','success'); refreshData(); }
+    else toast(r.message,'error');
+  }).withFailureHandler(function(e){ toast(e.message,'error'); }).deleteItem(id);
+}
+
+function adjustQty(id, delta) {
+  google.script.run.withSuccessHandler(function(r) {
+    if (r.success) { toast('Quantity updated: ' + r.newQuantity, 'success'); refreshData(); }
+    else toast(r.message,'error');
+  }).withFailureHandler(function(e){ toast(e.message,'error'); }).adjustQuantity(id, delta);
+}
+
+/* ================================================================
+   🔥 ISSUE ITEM — MAIN FEATURE
+   ================================================================ */
+function renderIssueItemDropdown() {
+  var sel = document.getElementById('issue-item-select');
+  sel.innerHTML = '<option value="">— Select an item —</option>';
+  APP.items.forEach(function(item) {
+    var label = item.ItemName + ' | ' + item.Category + ' | Stock: ' + item.Quantity + ' ' + item.Unit;
+    sel.innerHTML += '<option value="' + item.ID + '">' + label + '</option>';
+  });
+}
+
+function onIssueItemSelect() {
+  var id = document.getElementById('issue-item-select').value;
+  var preview = document.getElementById('issue-item-preview');
+
+  if (!id) {
+    preview.classList.remove('show');
+    return;
+  }
+
+  var item = APP.items.find(function(i){ return i.ID === id; });
+  if (!item) return;
+
+  document.getElementById('preview-name').textContent = item.ItemName;
+  document.getElementById('preview-cat').textContent = item.Category;
+  document.getElementById('preview-sub').textContent = item.SubCategory || '-';
+  document.getElementById('preview-size').textContent = item.Size || '-';
+  document.getElementById('preview-unit').textContent = item.Unit;
+  document.getElementById('preview-loc').textContent = item.Location || '-';
+
+  var stockEl = document.getElementById('preview-stock');
+  var scls = item.Quantity <= 0 ? 'stock-out' : item.isLowStock ? 'stock-low' : 'stock-ok';
+  var stxt = item.Quantity <= 0 ? '🔴 OUT OF STOCK' : item.isLowStock ? '⚠️ LOW STOCK: ' + item.Quantity + ' ' + item.Unit : '✅ In Stock: ' + item.Quantity + ' ' + item.Unit;
+  stockEl.className = 'stock-info ' + scls;
+  stockEl.textContent = stxt;
+
+  preview.classList.add('show');
+
+  // Set max qty
+  document.getElementById('issue-qty').max = item.Quantity;
+}
+
+function openIssueFromTable(id) {
+  // Navigate to issue tab and pre-select item
+  showView('issue', document.querySelector('[data-view="issue"]'));
+  document.getElementById('issue-item-select').value = id;
+  onIssueItemSelect();
+  document.getElementById('issue-qty').focus();
+}
+
+function submitIssue() {
+  var itemId = document.getElementById('issue-item-select').value;
+  if (!itemId) return toast('Please select an item!', 'error');
+
+  var item = APP.items.find(function(i){ return i.ID === itemId; });
+  if (!item) return toast('Item not found!', 'error');
+
+  var qty = parseInt(document.getElementById('issue-qty').value) || 0;
+  if (qty <= 0) return toast('Enter a valid quantity!', 'error');
+  if (qty > item.Quantity) return toast('Insufficient stock! Available: ' + item.Quantity, 'error');
+
+  var issuedTo = document.getElementById('issue-to').value.trim();
+  if (issuedTo.length < 2) return toast('Enter receiver name!', 'error');
+
+  var issueDate = document.getElementById('issue-date').value;
+  if (!issueDate) return toast('Select a date!', 'error');
+
+  var data = {
+    ItemID: item.ID,
+    ItemName: item.ItemName,
+    Category: item.Category,
+    SubCategory: item.SubCategory || '',
+    Size: item.Size || '',
+    Unit: item.Unit || 'Nos',
+    QtyIssued: qty,
+    IssuedTo: issuedTo,
+    IssueDate: issueDate,
+    IssueTime: document.getElementById('issue-time').value || '',
+    IssueLocation: document.getElementById('issue-location').value || '',
+    ProjectName: document.getElementById('issue-project').value || '',
+    Description: document.getElementById('issue-desc').value || '',
+    IssuedBy: document.getElementById('issue-by').value || ''
+  };
+
+  var btn = document.getElementById('issue-submit-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Issue';
+
+      if (result.success) {
+        toast(result.message, 'success');
+        clearIssueForm();
+        refreshData();
+      } else {
+        toast(result.message, 'error');
+      }
+    })
+    .withFailureHandler(function(err) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Issue';
+      toast('Error: ' + err.message, 'error');
+    })
+    .issueItem(data);
+}
+
+function clearIssueForm() {
+  document.getElementById('issue-item-select').value = '';
+  document.getElementById('issue-item-preview').classList.remove('show');
+  document.getElementById('issue-qty').value = '';
+  document.getElementById('issue-to').value = '';
+  document.getElementById('issue-location').value = '';
+  document.getElementById('issue-project').value = '';
+  document.getElementById('issue-desc').value = '';
+  // Keep date, time, and issued-by as they usually stay same
+
+  var now = new Date();
+  document.getElementById('issue-date').value = now.toISOString().split('T')[0];
+  document.getElementById('issue-time').value = now.toTimeString().slice(0,5);
+}
+
+/* ================================================================
+   ISSUE HISTORY
+   ================================================================ */
+function renderHistory() {
+  var tbody = document.getElementById('history-table');
+  var empty = document.getElementById('history-empty');
+  var issues = APP.filteredIssues;
+
+  updateIssueBadge();
+
+  if (issues.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  var html = '';
+  issues.forEach(function(iss) {
+    html += '<tr>' +
+      '<td style="font-size:11px;color:var(--text3)">' + esc(iss.IssueID) + '</td>' +
+      '<td class="item-name">' + esc(iss.ItemName) + '</td>' +
+      '<td class="item-cat">' + esc(iss.Category) + '</td>' +
+      '<td class="qty-cell" style="color:var(--orange)">' + iss.QtyIssued + '</td>' +
+      '<td style="font-weight:600">' + esc(iss.IssuedTo) + '</td>' +
+      '<td>' + esc(iss.IssueDate) + '</td>' +
+      '<td>' + esc(iss.IssueTime) + '</td>' +
+      '<td class="item-cat">' + esc(iss.IssueLocation) + '</td>' +
+      '<td class="item-cat">' + esc(iss.ProjectName) + '</td>' +
+      '<td class="item-cat">' + esc(iss.IssuedBy) + '</td>' +
+      '<td><button class="act-btn act-del" title="Delete" onclick="delIssue(\'' + iss.IssueID + '\')"><i class="fas fa-trash"></i></button></td>' +
+      '</tr>';
+  });
+  tbody.innerHTML = html;
+}
+
+function filterHistory() {
+  var q = document.getElementById('history-search').value.toLowerCase();
+  APP.filteredIssues = APP.issues.filter(function(iss) {
+    return !q || iss.ItemName.toLowerCase().indexOf(q) >= 0 ||
+      iss.IssuedTo.toLowerCase().indexOf(q) >= 0 ||
+      iss.Category.toLowerCase().indexOf(q) >= 0 ||
+      iss.ProjectName.toLowerCase().indexOf(q) >= 0 ||
+      iss.IssueID.toLowerCase().indexOf(q) >= 0;
+  });
+  renderHistory();
+}
+
+function delIssue(id) {
+  if (!confirm('Delete this issue record?')) return;
+  google.script.run.withSuccessHandler(function(r) {
+    if (r.success) { toast('Issue deleted','success'); refreshData(); }
+    else toast(r.message,'error');
+  }).withFailureHandler(function(e){ toast(e.message,'error'); }).deleteIssue(id);
+}
+
+function updateIssueBadge() {
+  var badge = document.getElementById('issue-count-badge');
+  if (APP.issues.length > 0) {
+    badge.textContent = APP.issues.length;
+    badge.style.display = 'inline';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+/* ================================================================
+   EMAIL
+   ================================================================ */
+function loadEmailConfig() {
+  if (!APP.emailConfig) return;
+  document.getElementById('email-recipients').value = APP.emailConfig.recipients || '';
+  document.getElementById('email-alert-time').value = APP.emailConfig.alertTime || '08:00';
+  var tog = document.getElementById('email-auto-toggle');
+  if (APP.emailConfig.autoAlertEnabled) tog.classList.add('on');
+  else tog.classList.remove('on');
+}
+
+function toggleAutoEmail() {
+  document.getElementById('email-auto-toggle').classList.toggle('on');
+}
+
+function saveEmail() {
+  var data = {
+    recipients: document.getElementById('email-recipients').value,
+    autoAlertEnabled: document.getElementById('email-auto-toggle').classList.contains('on'),
+    alertTime: document.getElementById('email-alert-time').value
+  };
+  google.script.run.withSuccessHandler(function(r) {
+    if (r.success) toast('Email settings saved!','success');
+    else toast(r.message,'error');
+  }).withFailureHandler(function(e){ toast(e.message,'error'); }).saveEmailConfig(data);
+}
+
+function sendAlert() {
+  var to = document.getElementById('email-recipients').value;
+  if (!to) return toast('Enter email first','error');
+  toast('Sending alert...','info');
+  google.script.run.withSuccessHandler(function(r) {
+    toast(r.success ? r.message : r.message, r.success ? 'success' : 'error');
+  }).withFailureHandler(function(e){ toast(e.message,'error'); }).sendLowStockAlert(to);
+}
+
+function sendReport() {
+  var to = document.getElementById('email-recipients').value;
+  if (!to) return toast('Enter email first','error');
+  toast('Sending report...','info');
+  google.script.run.withSuccessHandler(function(r) {
+    toast(r.success ? r.message : r.message, r.success ? 'success' : 'error');
+  }).withFailureHandler(function(e){ toast(e.message,'error'); }).sendInventoryReport(to);
+}
+
+function testEmail() {
+  var to = document.getElementById('email-recipients').value.split(',')[0].trim();
+  if (!to) return toast('Enter email first','error');
+  toast('Sending test...','info');
+  google.script.run.withSuccessHandler(function(r) {
+    toast(r.success ? r.message : r.message, r.success ? 'success' : 'error');
+  }).withFailureHandler(function(e){ toast(e.message,'error'); }).sendTestEmail(to);
+}
+
+/* ================================================================
+   MODAL HELPERS
+   ================================================================ */
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+/* ================================================================
+   REFRESH DATA
+   ================================================================ */
+function refreshData() {
+  google.script.run.withSuccessHandler(function(data) {
+    APP.config = data.config;
+    APP.items = data.items || [];
+    APP.stats = data.stats;
+    APP.emailConfig = data.emailConfig;
+    APP.issues = data.issues || [];
+    APP.filteredItems = APP.items.slice();
+    APP.filteredIssues = APP.issues.slice();
+
+    renderDashboard();
+    renderInventory();
+    renderIssueItemDropdown();
+    renderHistory();
+    loadEmailConfig();
+    filterInventory();
+    toast('Data refreshed!','success');
+  }).withFailureHandler(function(e){
+    toast('Refresh failed: ' + e.message,'error');
+  }).getInitialData();
+}
+
+/* ================================================================
+   UTILITIES
+   ================================================================ */
+function esc(str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg, type) {
+  type = type || 'info';
+  var icons = {success:'fa-check-circle', error:'fa-times-circle', warning:'fa-exclamation-circle', info:'fa-info-circle'};
+  var container = document.getElementById('toast-container');
+  var t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  t.innerHTML = '<i class="fas ' + (icons[type]||'fa-info-circle') + '"></i> ' + esc(msg);
+  container.appendChild(t);
+  setTimeout(function() {
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(40px)';
+    t.style.transition = '.3s';
+    setTimeout(function(){ t.remove(); }, 300);
+  }, 3500);
+}
+</script>
+
+</body>
+</html>
